@@ -1,0 +1,12 @@
+#!name=UnlockVIP
+#!desc=解锁 VIP
+
+[Script]
+# 彩云天气 SVIP 解锁
+彩云天气 SVIP = type=http-response,requires-body=1,max-size=0,pattern=https?:\/\/biz\.caiyunapp\.com\/(membership_rights|v2\/user),script-path=https://raw.githubusercontent.com/Tartarus2014/Script/master/CaiYun.js
+
+# Spotify Premium 解锁
+spotify-proto = type=http-response,pattern=^https:\/\/spclient\.wg\.spotify\.com\/(bootstrap\/v1\/bootstrap|user-customization-service\/v1\/customize)$,requires-body=1,binary-body-mode=1,max-size=0,script-path=https://raw.githubusercontent.com/app2smile/rules/master/js/spotify-proto.js,script-update-interval=0
+
+[MITM]
+hostname = %APPEND% biz.caiyunapp.com, spclient.wg.spotify.com
