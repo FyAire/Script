@@ -1,0 +1,386 @@
+#---------------------------------------------------#
+
+## 官方Github文档 https://dreamacro.github.io/clash/zh_CN/
+
+#---------------------------------------------------#
+
+
+# HTTP(S) 代理服务端口
+port: 7890
+
+# SOCKS5 代理服务端口
+socks-port: 7891
+
+# Linux 和 macOS 的透明代理服务端口 (TCP 和 TProxy UDP 重定向)
+# redir-port: 7892
+
+# Linux 的透明代理服务端口 (TProxy TCP 和 TProxy UDP)
+# tproxy-port: 7893
+
+# HTTP(S) 和 SOCKS4(A)/SOCKS5 代理服务共用一个端口
+#mixed-port: 7890
+
+# 本地 SOCKS5/HTTP(S) 代理服务的认证
+# authentication:
+#  - "user1:pass1"
+#  - "user2:pass2"
+
+# 设置为 true 以允许来自其他 LAN IP 地址的连接
+allow-lan: true
+
+# 仅当 `allow-lan` 为 `true` 时有效
+# '*': 绑定所有 IP 地址
+# 192.168.122.11: 绑定单个 IPv4 地址
+# "[aaaa::a8aa:ff:fe09:57d8]": 绑定单个 IPv6 地址
+bind-address: '*'
+
+# Clash 路由工作模式
+# rule: 基于规则的数据包路由
+# global: 所有数据包将被转发到单个节点
+# direct: 直接将数据包转发到互联网
+mode: rule
+
+# 默认情况下, Clash 将日志打印到 STDOUT
+# 日志级别: info / warning / error / debug / silent
+log-level: info
+
+# 当设置为 false 时, 解析器不会将主机名解析为 IPv6 地址
+ipv6: true
+
+# RESTful Web API 监听地址
+external-controller: 127.0.0.1:9090
+
+# 配置目录的相对路径或静态 Web 资源目录的绝对路径. Clash core 将在
+# `http://{{external-controller}}/ui` 中提供服务.
+# 或者直接访问默认地址 http://clash.razord.top
+#external-ui: folder
+
+# RESTful API 密钥 (可选)
+# 通过指定 HTTP 头 `Authorization: Bearer ${secret}` 进行身份验证
+# 如果RESTful API在 0.0.0.0 上监听, 务必设置一个 secret 密钥.
+#secret: ""
+
+# 出站接口名称
+interface-name: en0
+
+# fwmark (仅在 Linux 上有效)
+# routing-mark: 6666
+
+# 用于DNS服务器和连接建立的静态主机 (如/etc/hosts) .
+#
+# 支持通配符主机名 (例如 *.clash.dev, *.foo.*.example.com)
+# 非通配符域名优先级高于通配符域名
+# 例如 foo.example.com > *.example.com > .example.com
+# P.S. +.foo.com 等于 .foo.com 和 foo.com
+hosts:
+  # Firebase Cloud Messaging
+  'mtalk.google.com': 108.177.125.188
+  # Google Dl
+  'dl.google.com': 119.29.29.29
+  'dl.l.google.com': 119.29.29.29
+  'update.googleapis.com': 119.29.29.29
+
+# profile:
+  # 将 `select` 手动选择 结果存储在 $HOME/.config/clash/.cache 中
+  # 如果不需要此行为, 请设置为 false
+  # 当两个不同的配置具有同名的组时, 将共享所选值
+  # store-selected: true
+
+  # 持久化 fakeip
+  # store-fake-ip: false
+
+# DNS 服务设置
+# 此部分是可选的. 当不存在时, DNS 服务将被禁用.
+dns:
+  enable: true
+  listen: 0.0.0.0:53
+  # ipv6: false # 当为 false 时, AAAA 查询的响应将为空
+
+  # 由于连接到加密 DNS 服务时，需要解析服务器本身的域名，因此需要指定一些相对干净的国内 明文 DNS 服务器地址
+  default-nameserver:
+    - 114.114.114.114
+    - 8.8.8.8
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16 # Fake IP 地址池 CIDR
+  # use-hosts: true # 查找 hosts 并返回 IP 记录
+
+  # search-domains: [local] # A/AAAA 记录的搜索域
+
+  # 此列表中的主机名将不会使用 Fake IP 解析
+  # 即, 对这些域名的请求将始终使用其真实 IP 地址进行响应
+  # fake-ip-filter:
+  #   - '*.lan'
+  #   - localhost.ptlogin2.qq.com
+
+  # 指定解析国内域名时使用的加密 DNS 服务器地址
+  nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+    - tls://dns.rubyfish.cn:853
+
+  # 指定解析国外域名时使用的加密 DNS 服务器地址，并设置分流规则
+  fallback:
+    - https://1.1.1.1/dns-query
+    - https://9.9.9.9/dns-query
+    - https://dns.google/dns-query
+
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    ipcidr:
+      - 240.0.0.0/4
+    domain:
+      - '+.google.com'
+      - '+.facebook.com'
+      - '+.youtube.com'
+
+  # 通过特定的名称服务器查找域名
+  # nameserver-policy:
+  #   'www.baidu.com': '114.114.114.114'
+  #   '+.internal.crop.com': '10.0.0.1'
+
+proxies:
+  # socks5
+  - name: "Miami"
+    type: socks5
+    server: 209.209.52.71
+    port: 2333
+    username: fya123
+    password: abc123
+
+proxy-groups:
+  # select 手动选择, 用于选择代理或策略组
+  # 您可以使用 RESTful API 来切换代理, 建议在GUI中切换.
+  - name: "Proxy"
+    type: select
+    proxies:
+      - DIRECT
+      - Miami
+    use:
+      - TAG
+
+  # 中继链路代理节点. 节点不应包含中继. 不支持 UDP.
+  # 流量节点链路: clash <-> http <-> vmess <-> ss1 <-> ss2 <-> Internet
+  - name: "Paypal"
+    type: relay
+    proxies:
+      - 🇭🇰 香港 03丨1x HK
+      - Miami
+
+  - name: "OpenAI"
+    type: select
+    filter: '🇺🇸|🇭🇰'
+    use:
+      - TAG
+
+  - name: "TikTok"
+    type: select
+    filter: '🇯🇵|🇺🇸'
+    use:
+      - TAG
+
+  - name: "Netflix"
+    type: select
+    filter: '🇭🇰|🇸🇬|🇯🇵'
+    use:
+      - TAG
+
+  - name: "Disney+"
+    type: select
+    filter: '🇭🇰|🇵🇭|🇮🇳|🇹🇷'
+    use:
+      - TAG
+
+  - name: "Spotify"
+    type: select
+    filter: '🇯🇵|🇺🇸'
+    proxies:
+      - DIRECT
+    use:
+      - TAG
+
+  # url-test 通过对 指定URL 进行基准速度测试来选择将使用哪个代理.
+  - name: "Streaming"
+    type: url-test
+    filter: '🇭🇰|🇸🇬|🇯🇵'
+    use:
+      - TAG
+    url: 'http://www.gstatic.com/generate_204'
+    interval: 300
+
+  - name: Twitter
+    type: select
+    filter: '美国'
+    use:
+      - TAG
+
+  - name: "Apple"
+    type: select
+    filter: '🇺🇸'
+    proxies:
+      - DIRECT
+    use:
+      - TAG
+
+  - name: "Advertising"
+    type: select
+    filter: '🇺🇸'
+    proxies:
+      - DIRECT
+      - REJECT
+
+  - name: "Final"
+    type: select
+    proxies:
+      - DIRECT
+    use:
+      - Proxy
+
+proxy-providers:
+  TAG:
+    type: http
+    url: https://tagcdnsub.work/api/v1/client/subscribe?token=4d4c59588c05c46f743140c8637be26a
+    interval: 3600
+    path: ./profiles/proxies/TAG.yaml
+    health-check:
+      enable: true
+      interval: 600
+      url: http://www.gstatic.com/generate_204
+
+# 规则集
+rule-providers:
+  # 广告域名列表
+  reject:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt"
+    path: ./profiles/rules/reject.yaml
+    interval: 86400
+  # 运营商劫持或恶意网站
+  Hijacking:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/FyAire/Script/main/Clash/rules/Hijacking.yaml?token=GHSAT0AAAAAACHCJGSW6M4PVUOXYQ3ORCV4ZIQJLDQ"
+    path: ./profiles/rules/Hijacking.yaml
+    interval: 86400
+  # 需要直连的常见软件列表
+  applications:
+    type: http
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt"
+    path: ./profiles/rules/applications.yaml
+    interval: 86400
+  # 私有网络专用域名列表
+  private:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt"
+    path: ./profiles/rules/private.yaml
+    interval: 86400
+  # Paypal 列表
+  Paypal:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/FyAire/Script/main/Clash/rules/Paypal.yaml?token=GHSAT0AAAAAACHCJGSW6M4PVUOXYQ3ORCV4ZIQJLDQ"
+    path: ./profiles/rules/Paypal.yaml
+    interval: 86400
+  # OpenAI 列表
+  OpenAI:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/FyAire/Script/main/Clash/rules/OpenAI.yaml?token=GHSAT0AAAAAACHCJGSW6M4PVUOXYQ3ORCV4ZIQJLDQ"
+    path: ./profiles/rules/OpenAI.yaml
+    interval: 86400
+  # TikTok 列表
+  TikTok:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/FyAire/Script/main/Clash/rules/TikTok.yaml?token=GHSAT0AAAAAACHCJGSW6M4PVUOXYQ3ORCV4ZIQJLDQ"
+    path: ./profiles/rules/TikTok.yaml
+    interval: 86400
+  # Netflix 列表
+  Netflix:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/FyAire/Script/main/Clash/rules/Netflix.yaml?token=GHSAT0AAAAAACHCJGSW6M4PVUOXYQ3ORCV4ZIQJLDQ"
+    path: ./profiles/rules/Netflix.yaml
+    interval: 86400
+  # Disney+ 列表
+  Disney+:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/FyAire/Script/main/Clash/rules/Disney+.yaml?token=GHSAT0AAAAAACHCJGSW6M4PVUOXYQ3ORCV4ZIQJLDQ"
+    path: ./profiles/rules/Disney+.yaml
+    interval: 86400
+  # Spotify 列表
+  Spotify:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/FyAire/Script/main/Clash/rules/Spotify.yaml?token=GHSAT0AAAAAACHCJGSW6M4PVUOXYQ3ORCV4ZIQJLDQ"
+    path: ./profiles/rules/Spotify.yaml
+    interval: 86400
+  # Streaming 国际流媒体服务
+  Streaming:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/FyAire/Script/main/Clash/rules/Streaming.yaml?token=GHSAT0AAAAAACHCJGSW6M4PVUOXYQ3ORCV4ZIQJLDQ"
+    path: ./profiles/rules/Streaming.yaml
+    interval: 86400
+  # Twitter 列表
+  Twitter:
+    type: http
+    behavior: classical
+    url: https://ghproxy.com/https://raw.githubusercontent.com/FyAire/Script/main/Clash/rules/Twitter.yaml
+    path: ./profiles/rules/Twitter.yaml
+    interval: 86400
+  # iCloud 域名列表
+  icloud:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/icloud.txt"
+    path: ./profiles/rules/icloud.yaml
+    interval: 86400
+  # Apple 域名列表
+  apple:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/apple.txt"
+    path: ./profiles/rules/apple.yaml
+    interval: 86400
+  # 代理域名列表
+  proxy:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt"
+    path: ./profiles/rules/proxy.yaml
+    interval: 86400
+  # 中国大陆 IP 地址列表
+  cncidr:
+    type: http
+    behavior: ipcidr
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt"
+    path: ./profiles/rules/cncidr.yaml
+    interval: 86400
+
+rules:
+  - DOMAIN,clash.razord.top,DIRECT
+  - DOMAIN,yacd.haishan.me,DIRECT
+  - RULE-SET,reject,Advertising
+  - RULE-SET,Hijacking,Advertising
+  - RULE-SET,applications,DIRECT
+  - RULE-SET,private,DIRECT
+  - RULE-SET,Paypal,Paypal
+  - RULE-SET,OpenAI,OpenAI
+  - RULE-SET,TikTok,TikTok
+  - RULE-SET,Netflix,Netflix
+  - RULE-SET,Disney+,Disney+
+  - RULE-SET,Spotify,Spotify
+  - RULE-SET,Streaming,Streaming
+  - RULE-SET,Twitter,Twitter
+  - RULE-SET,icloud,Apple
+  - RULE-SET,apple,Apple
+  - RULE-SET,proxy,Proxy
+  - RULE-SET,cncidr,DIRECT
+  - GEOIP,LAN,DIRECT
+  - GEOIP,CN,DIRECT
+  - MATCH,PROXY
